@@ -75,14 +75,15 @@ setup_caelestia() {
 setup_system() {
     setup_paru
     setup_gpudrivers
-    sudo pacman -S --noconfirm --needed hyprland sddm foot fish uwsm \
+    sudo pacman -S --noconfirm --needed hyprland sddm foot fish uwsm libnewt \
         hyprpolkitagent pipewire pipewire-audio pipewire-jack pipewire-pulse \
         wireplumber xdg-desktop-portal fastfetch \
         xdg-desktop-portal-hyprland thunar starship nano \
         ttf-jetbrains-mono-nerd \
         xdg-user-dirs eza btop \
-        flatpak gnome-software
+        flatpak gnome-software zen-browser
     sudo systemctl enable sddm
     xdg-user-dirs-update
     setup_caelestia
 }
+

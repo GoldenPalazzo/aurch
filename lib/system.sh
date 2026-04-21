@@ -60,6 +60,13 @@ setup_gpudrivers() {
                 egl-wayland \
                 libva-nvidia-driver
             ;;
+        "intel")
+            sudo pacman -S --noconfirm --needed \
+                mesa intel-media-driver vulkan-intel
+            ;;
+        "amd")
+            sudo pacman -S --noconfirm --needed mesa vulkan-radeon
+            ;;
         *) warn "$REPLY not implemented." ;;
     esac
 }
@@ -87,3 +94,4 @@ setup_system() {
     xdg-user-dirs-update
     setup_caelestia
 }
+

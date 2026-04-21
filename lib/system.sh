@@ -1,3 +1,6 @@
+set -e
+set -o pipefail
+
 setup_rustup() {
     if ! command -v rustup &>/dev/null; then
         log "rustup not installed. Installing now..."
@@ -7,7 +10,7 @@ setup_rustup() {
 }
 
 setup_paru() (
-    if command -v paru --version &>/dev/null; then
+    if command -v paru &>/dev/null; then
         log "paru already installed"
         exit;
     fi
@@ -19,7 +22,8 @@ setup_paru() (
     cd /tmp/paru
     git pull
     makepkg -si
-    sudo echo 'MAKEFLAGS="$(nproc --ignore=1)"' >> /etc/makepkg.conf.d/make.conf
+    sudo mkdir -p /etc/makepkg.conf.d/
+    echo 'MAKEFLAGS="$(nproc --ignore=1)"' | sudo tee -a /etc/makepkg.conf.d/make.conf > /dev/null
 )
 
 setup_gpudrivers() {
@@ -31,18 +35,18 @@ setup_gpudrivers() {
                 vulkan-virtio \
                 spice-vdagent \
                 qemu-guest-agent
-            sudo echo "WLR_RENDERER=pixman" >> /etc/environment
-            sudo echo "WLR_NO_HARDWARE_CURSORS=1" >> /etc/environment
+            echo "WLR_RENDERER=pixman" | sudo tee -a /etc/environment > /dev/null
+            echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a /etc/environment > /dev/null
             ;;
         "vbox")
             log "Configuring video drivers for VirtualBox..."
             sudo pacman -S --noconfirm \
                 mesa \
                 virtualbox-guest-agent
-            sudo echo "WLR_RENDERER=pixman" >> /etc/environment
-            sudo echo "WLR_NO_HARDWARE_CURSORS=1" >> /etc/environment
+            echo "WLR_RENDERER=pixman" | sudo tee -a /etc/environment > /dev/null
+            echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a /etc/environment > /dev/null
             ;;
-        *) echo "not implemented" ;;
+        *) warn "$REPLY not implemented." ;;
     esac
 }
 
@@ -52,7 +56,7 @@ setup_caelestia() (
 )
 
 setup_system() {
-    # setup_paru
+    setup_paru
     setup_gpudrivers
     # dovrei forse installare il portal di gnome che è più bello
     sudo pacman -S --noconfirm hyprland sddm foot fish \

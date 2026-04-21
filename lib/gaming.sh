@@ -1,3 +1,6 @@
+set -e
+set -o pipefail
+
 setup_steam() {
     flatpak install -y flathub com.valvesoftware.Steam net.davidotek.pupgui2 \
         org.freedesktop.Platform.VulkanLayer.gamescope//25.08

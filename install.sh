@@ -28,7 +28,8 @@ ask_user_info
 ask_gpu_vendor
 
 setup_system
-setup_gaming
+
+ask_gaming && setup_gaming
 
 kill "$SUDO_KEEPALIVE_PID"
 gum style \

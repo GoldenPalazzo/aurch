@@ -69,3 +69,7 @@ ask_gpu_vendor() {
     esac
     export GPU_VENDOR
 }
+
+ask_gaming() {
+    gum confirm "Do you want to install gaming related software?"
+}

@@ -1,0 +1,69 @@
+setup_rustup() {
+    if ! command -v rustup &>/dev/null; then
+        log "rustup not installed. Installing now..."
+        sudo pacman -S --noconfirm rustup
+    fi
+    rustup toolchain list | grep -q stable || rustup default stable
+}
+
+setup_paru() (
+    if command -v paru --version &>/dev/null; then
+        log "paru already installed"
+        exit;
+    fi
+    setup_rustup
+    sudo pacman -S --needed --noconfirm base-devel git
+    if [ ! -d /tmp/paru ]; then
+        git clone https://aur.archlinux.org/paru.git /tmp/paru
+    fi
+    cd /tmp/paru
+    git pull
+    makepkg -si
+    sudo echo 'MAKEFLAGS="$(nproc --ignore=1)"' >> /etc/makepkg.conf.d/make.conf
+)
+
+setup_gpudrivers() {
+    case $GPU_VENDOR in
+        "qemu")
+            log "Configuring video drivers for QEMU/KVM..."
+            sudo pacman -S --noconfirm \
+                mesa \
+                vulkan-virtio \
+                spice-vdagent \
+                qemu-guest-agent
+            sudo echo "WLR_RENDERER=pixman" >> /etc/environment
+            sudo echo "WLR_NO_HARDWARE_CURSORS=1" >> /etc/environment
+            ;;
+        "vbox")
+            log "Configuring video drivers for VirtualBox..."
+            sudo pacman -S --noconfirm \
+                mesa \
+                virtualbox-guest-agent
+            sudo echo "WLR_RENDERER=pixman" >> /etc/environment
+            sudo echo "WLR_NO_HARDWARE_CURSORS=1" >> /etc/environment
+            ;;
+        *) echo "not implemented" ;;
+    esac
+}
+
+setup_caelestia() (
+    fish ~/.local/share/caelestia/install.fish --noconfirm
+    paru -S --noconfirm caelestia-shell
+)
+
+setup_system() {
+    # setup_paru
+    setup_gpudrivers
+    # dovrei forse installare il portal di gnome che è più bello
+    sudo pacman -S --noconfirm hyprland sddm foot fish \
+        hyprpolkitagent pipewire pipewire-audio pipewire-jack pipewire-pulse \
+        wireplumber xdg-desktop-portal fastfetch \
+        xdg-desktop-portal-hyprland thunar nm-applet starship nano \
+        ttf-jetbrains-mono-nerd \
+        xdg-user-dirs eza btop \
+        flatpak gnome-software
+    sudo systemctl enable sddm
+    xdg-user-dirs-update
+    setup_caelestia
+}
+

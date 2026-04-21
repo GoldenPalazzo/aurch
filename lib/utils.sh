@@ -51,6 +51,21 @@ ask_user_info() {
 
 ask_gpu_vendor() {
     echo -e "\n${BOLD}Which is your GPU vendor?${NC}"
-    GPU_VENDOR=$(gum choose "nvidia" "nvidia-open" "amd" "intel" "qemu" "vbox")
+    CHOICE=$(gum choose \
+        "NVIDIA (proprietary)" \
+        "NVIDIA (open source)" \
+        "AMD" \
+        "Intel" \
+        "QEMU / KVM" \
+        "VirtualBox")
+    case $CHOICE in
+        "NVIDIA (proprietary)")  GPU_VENDOR="nvidia" ;;
+        "NVIDIA (open source)")  GPU_VENDOR="nvidia-open" ;;
+        "AMD")                   GPU_VENDOR="amd" ;;
+        "Intel")                 GPU_VENDOR="intel" ;;
+        "QEMU / KVM")            GPU_VENDOR="qemu" ;;
+        "VirtualBox")            GPU_VENDOR="vbox" ;;
+        *) die "No GPU selected." ;;
+    esac
     export GPU_VENDOR
 }

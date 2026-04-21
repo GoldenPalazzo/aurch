@@ -21,6 +21,8 @@ sudo pacman -S --noconfirm --needed gum figlet
 clear
 
 print_banner
+gum confirm "This will install and configure your system. Continue?" \
+    || die "Aborted by user."
 
 ask_user_info
 ask_gpu_vendor
@@ -29,4 +31,13 @@ setup_system
 setup_gaming
 
 kill "$SUDO_KEEPALIVE_PID"
-success "Installation finished! Reboot with: sudo reboot"
+gum style \
+    --foreground 214 --bold \
+    --border rounded \
+    --border-foreground 214 \
+    --padding "1 4" \
+    --margin "1 0" \
+    "$(figlet -f slant 'Done!')" \
+    "" \
+    "Reboot to start using your system:" \
+    "  sudo reboot"

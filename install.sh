@@ -17,7 +17,7 @@ sudo -v
 while true; do sudo -n true; sleep 60; done &
 SUDO_KEEPALIVE_PID=$!
 
-sudo pacman -S --noconfirm gum figlet
+sudo pacman -S --noconfirm --needed gum figlet
 clear
 
 print_banner

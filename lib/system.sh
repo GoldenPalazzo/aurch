@@ -4,7 +4,7 @@ set -o pipefail
 setup_rustup() {
     if ! command -v rustup &>/dev/null; then
         log "rustup not installed. Installing now..."
-        sudo pacman -S --noconfirm rustup
+        sudo pacman -S --noconfirm --needed rustup
     fi
     rustup toolchain list | grep -q stable || rustup default stable
 }
@@ -21,9 +21,12 @@ setup_paru() (
     fi
     cd /tmp/paru
     git pull
-    makepkg -si
+    if ! ls ./*.pkg.tar.zst &>/dev/null; then
+        makepkg -s --noconfirm
+    fi
+    sudo pacman -U --noconfirm --needed *.pkg.tar.zst
     sudo mkdir -p /etc/makepkg.conf.d/
-    echo 'MAKEFLAGS="$(nproc --ignore=1)"' | sudo tee -a /etc/makepkg.conf.d/make.conf > /dev/null
+    echo "MAKEFLAGS='-j$(nproc --ignore=1)'" | sudo tee -a /etc/makepkg.conf.d/make.conf > /dev/null
 )
 
 setup_gpudrivers() {
@@ -40,7 +43,7 @@ setup_gpudrivers() {
             ;;
         "vbox")
             log "Configuring video drivers for VirtualBox..."
-            sudo pacman -S --noconfirm \
+            sudo pacman -S --noconfirm --needed \
                 mesa \
                 virtualbox-guest-agent
             echo "WLR_RENDERER=pixman" | sudo tee -a /etc/environment > /dev/null
@@ -50,19 +53,19 @@ setup_gpudrivers() {
     esac
 }
 
-setup_caelestia() (
+setup_caelestia() {
+    paru -S --noconfirm --needed caelestia-shell
+    git clone https://github.com/caelestia-dots/caelestia.git ~/.local/share/caelestia
     fish ~/.local/share/caelestia/install.fish --noconfirm
-    paru -S --noconfirm caelestia-shell
-)
+}
 
 setup_system() {
     setup_paru
     setup_gpudrivers
-    # dovrei forse installare il portal di gnome che è più bello
-    sudo pacman -S --noconfirm hyprland sddm foot fish \
+    sudo pacman -S --noconfirm --needed hyprland sddm foot fish uwsm \
         hyprpolkitagent pipewire pipewire-audio pipewire-jack pipewire-pulse \
         wireplumber xdg-desktop-portal fastfetch \
-        xdg-desktop-portal-hyprland thunar nm-applet starship nano \
+        xdg-desktop-portal-hyprland thunar starship nano \
         ttf-jetbrains-mono-nerd \
         xdg-user-dirs eza btop \
         flatpak gnome-software

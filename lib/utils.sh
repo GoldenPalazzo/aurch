@@ -42,7 +42,7 @@ check_internet() {
 
 ask_user_info() {
     echo -e "\n${BOLD}Initial configuration${NC}"
-    read -rp "Your full name: " USER_FULLNAME
+    USER_FULLNAME=$(gum input --placeholder "Temurto Macchi" --prompt "Full name > ")
     [[ -z "$USER_FULLNAME" ]] && die "Full name cannot be empty"
     # read -rp "Your email: " USER_EMAIL
     # read -rp "Github username (optional): " USER_EMAIL
@@ -51,16 +51,6 @@ ask_user_info() {
 
 ask_gpu_vendor() {
     echo -e "\n${BOLD}Which is your GPU vendor?${NC}"
-    select GPU in "NVIDIA (propietary)" "AMD" "Intel" "NVIDIA (open)" "QEMU" "VirtualBox"; do
-        case $REPLY in
-            1) GPU_VENDOR="nvidia"; break ;;
-            2) GPU_VENDOR="amd"; break ;;
-            3) GPU_VENDOR="intel"; break ;;
-            4) GPU_VENDOR="nvidia-open"; break ;;
-            5) GPU_VENDOR="qemu"; break;;
-            6) GPU_VENDOR="vbox"; break;;
-            *) warn "Invalid choice '$REPLY'."
-        esac
-    done
+    GPU_VENDOR=$(gum choose "nvidia" "nvidia-open" "amd" "intel" "qemu" "vbox")
     export GPU_VENDOR
 }

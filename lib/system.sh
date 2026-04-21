@@ -47,8 +47,8 @@ setup_gpudrivers() {
                 mesa \
                 virtualbox-guest-utils
             sudo systemctl enable --now vboxservice
-            # echo "WLR_RENDERER=pixman" | sudo tee -a /etc/environment > /dev/null
-            # echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a /etc/environment > /dev/null
+            echo "WLR_RENDERER=pixman" | sudo tee -a /etc/environment > /dev/null
+            echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a /etc/environment > /dev/null
             ;;
         "nvidia"|"nvidia-open")
             local driver="nvidia-dkms"

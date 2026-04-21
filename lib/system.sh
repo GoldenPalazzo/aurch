@@ -49,6 +49,16 @@ setup_gpudrivers() {
             echo "WLR_RENDERER=pixman" | sudo tee -a /etc/environment > /dev/null
             echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a /etc/environment > /dev/null
             ;;
+        "nvidia"|"nvidia-open")
+            local driver="nvidia-dkms"
+            [[ "$GPU_VENDOR" == "nvidia-open" ]] && driver="nvidia-open-dkms"
+            sudo pacman -S --noconfirm --needed \
+                linux-headers \
+                "$driver" \
+                nvidia-utils \
+                nvidia-settings \
+                egl-wayland \
+                libva-nvidia-driver
         *) warn "$REPLY not implemented." ;;
     esac
 }
@@ -57,6 +67,9 @@ setup_caelestia() {
     paru -S --noconfirm --needed caelestia-shell
     git clone https://github.com/caelestia-dots/caelestia.git ~/.local/share/caelestia
     fish ~/.local/share/caelestia/install.fish --noconfirm
+    if [[ "$GPU_VENDOR" == "nvidia" || "$GPU_VENDOR" == "nvidia-open" ]]; then
+        cat "$SCRIPT_DIR/cfg/nvidia-hyprvars.conf" >> ~/.config/caelestia/hypr-vars.conf
+    fi
 }
 
 setup_system() {
@@ -73,4 +86,3 @@ setup_system() {
     xdg-user-dirs-update
     setup_caelestia
 }
-

@@ -45,13 +45,15 @@ setup_gpudrivers() {
             log "Configuring video drivers for VirtualBox..."
             sudo pacman -S --noconfirm --needed \
                 mesa \
-                virtualbox-guest-agent
-            echo "WLR_RENDERER=pixman" | sudo tee -a /etc/environment > /dev/null
-            echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a /etc/environment > /dev/null
+                virtualbox-guest-utils
+            sudo systemctl enable --now vboxservice
+            # echo "WLR_RENDERER=pixman" | sudo tee -a /etc/environment > /dev/null
+            # echo "WLR_NO_HARDWARE_CURSORS=1" | sudo tee -a /etc/environment > /dev/null
             ;;
         "nvidia"|"nvidia-open")
             local driver="nvidia-dkms"
             [[ "$GPU_VENDOR" == "nvidia-open" ]] && driver="nvidia-open-dkms"
+            log "Configuring video drivers for Nvidia ($driver)..."
             sudo pacman -S --noconfirm --needed \
                 linux-headers \
                 "$driver" \
@@ -61,10 +63,12 @@ setup_gpudrivers() {
                 libva-nvidia-driver
             ;;
         "intel")
+            log "Configuring video drivers for Intel..."
             sudo pacman -S --noconfirm --needed \
                 mesa intel-media-driver vulkan-intel
             ;;
         "amd")
+            log "Configuring video drivers for AMD..."
             sudo pacman -S --noconfirm --needed mesa vulkan-radeon
             ;;
         *) warn "$REPLY not implemented." ;;
@@ -72,12 +76,29 @@ setup_gpudrivers() {
 }
 
 setup_caelestia() {
+    log "Installing caelestia-shell..."
     paru -S --noconfirm --needed caelestia-shell
     git clone https://github.com/caelestia-dots/caelestia.git ~/.local/share/caelestia
     fish ~/.local/share/caelestia/install.fish --noconfirm
     if [[ "$GPU_VENDOR" == "nvidia" || "$GPU_VENDOR" == "nvidia-open" ]]; then
+        log "Overriding env variables for Nvidia..."
         cat "$SCRIPT_DIR/cfg/nvidia-hyprvars.conf" >> ~/.config/caelestia/hypr-vars.conf
     fi
+    success "Installed caelestia-shell."
+}
+
+setup_user_info() {
+    log "Setting full name for user $USER..."
+    sudo usermod -c "$USER_FULLNAME" "$USER"
+    success "Setup full name to $USER_FULLNAME."
+}
+
+setup_sddm() {
+    log "Setting up desktop manager..."
+    paru -S --noconfirm --needed sddm-silent-theme
+    sudo cp "$SCRIPT_DIR/cfg/sddm.conf" "/etc/sddm.conf"
+    sudo systemctl enable sddm
+    success "Installed theme for SDDM."
 }
 
 setup_system() {
@@ -90,8 +111,10 @@ setup_system() {
         ttf-jetbrains-mono-nerd \
         xdg-user-dirs eza btop \
         flatpak gnome-software zen-browser
-    sudo systemctl enable sddm
+
+    setup_user_info
     xdg-user-dirs-update
+    setup_sddm
     setup_caelestia
 }
 

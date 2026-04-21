@@ -59,6 +59,7 @@ setup_gpudrivers() {
                 nvidia-settings \
                 egl-wayland \
                 libva-nvidia-driver
+            ;;
         *) warn "$REPLY not implemented." ;;
     esac
 }
@@ -86,4 +87,3 @@ setup_system() {
     xdg-user-dirs-update
     setup_caelestia
 }
-

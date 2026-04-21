@@ -9,7 +9,6 @@ BOLD='\033[1m';
 NC='\033[0m'
 
 print_banner() {
-    # figlet per il testo grande, gum per i colori
     gum style \
         --foreground 214 \
         --bold \
@@ -22,12 +21,17 @@ print_banner() {
     echo ""
 
     gum style --foreground 214 "Author" | tr -d '\n'
-    gum style --foreground 245 "  Francesco Palazzo, 2026"
+    gum style --foreground 245 "       Francesco Palazzo, 2026"
 
     gum style --foreground 214 "Desktop" | tr -d '\n'
-    gum style --foreground 245 "  Hyprland + Caelestia Shell"
+    gum style --foreground 245 "      Hyprland (by @hyprwm on GitHub)"
 
-    echo ""
+    gum style --foreground 214 "Dotfiles" | tr -d '\n'
+    gum style --foreground 245 "     caelestia (by @caelestia-dots on GitHub)"
+
+    gum style --foreground 214 "SDDM theme" | tr -d '\n'
+    gum style --foreground 245 "   SilentSDDM (by @uiriansan on GitHub)"
+
 }
 
 log()     { echo -e "${BLUE}[$(date '+%H:%M:%S')]${NC} $1"; }

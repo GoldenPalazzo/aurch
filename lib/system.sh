@@ -84,6 +84,7 @@ setup_caelestia() {
         log "Overriding env variables for Nvidia..."
         cat "$SCRIPT_DIR/cfg/nvidia-hyprvars.conf" >> ~/.config/caelestia/hypr-vars.conf
     fi
+    cp "$SCRIPT_DIR/cfg/shell.json" "~/.config/caelestia/shell.json"
     success "Installed caelestia-shell."
 }
 

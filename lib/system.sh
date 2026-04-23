@@ -112,7 +112,7 @@ setup_system() {
         xdg-desktop-portal-hyprland thunar starship nano \
         ttf-jetbrains-mono-nerd \
         xdg-user-dirs eza btop \
-        flatpak gnome-software
+        flatpak gnome-software sof-firmware
     paru -S --noconfirm --needed zen-browser-bin
 
     setup_user_info
